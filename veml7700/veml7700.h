@@ -5,7 +5,7 @@
 #define CONF0_SET_SHUTDOWN(val, bit_value)  ((val) = ((val) & ~1) | (bit_value))
 #define CONF0_SET_ENABLE_INTERRUPT(val, bit_value)  ((val) = ((val) & ~(1 << 1)) | ((bit_value) << 1))
 #define CONF0_SET_PERSISTENCE(val, bit_value)  ((val) = ((val) & ~(3 << 4)) | ((bit_value & 3) << 4))
-#define CONF0_SET_INTERGRATION_TIME(val, bit_value)  ((val) = ((val) & ~(0xF << 6)) | ((bit_value & 0xF) << 6))
+#define CONF0_SET_INTEGRATION_TIME(val, bit_value)  ((val) = ((val) & ~(0xF << 6)) | ((bit_value & 0xF) << 6))
 #define CONF0_SET_GAIN(val, bit_value)  ((val) = ((val) & ~(3 << 11)) | ((bit_value & 3) << 11))
 
 #define CONF0_GET_SHUTDOWN(val)          ((val) & 1)
@@ -40,7 +40,7 @@ typedef enum
   MS200   = 0x1,
   MS400   = 0x2,
   MS800   = 0x3
-}IntergrationTime;
+}IntegrationTime;
 
 typedef enum
 {
@@ -57,15 +57,21 @@ public:
   void init();
 
   void set_gain(Gain gain);
-  void set_intergration_time(IntergrationTime time);
+  void set_integration_time(IntegrationTime time);
 
-  Gain get_gain();
-  IntergrationTime get_intergration_time();
+  float get_lux() const;
+  Gain get_gain() const;
+  IntegrationTime get_integration_time() const;
 
   void refresh_conf0_cache();
 
-  void send(uint32_t data, uint8_t reg);
-  uint32_t Veml7700::receive(uint8_t reg);
+  float als_to_lux(uint16_t als_value, Gain gain, IntegrationTime integration_time) const;
+  
 private:
+  void send(uint32_t data, uint8_t reg) const;
+  uint32_t Veml7700::receive(uint8_t reg) const;
+
   uint16_t conf0_cache = 0;
+  float gain_factors[10] = {0};
+  float integration_time_factors[10] = {0};
 };

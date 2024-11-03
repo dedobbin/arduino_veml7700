@@ -11,18 +11,15 @@ void setup()
   veml->init();
   Gain gain = veml->get_gain();
   Serial.println(gain);
-  veml->set_gain(Gain::D8);
-  gain = veml->get_gain();
-  Serial.println(gain);
-  veml->set_intergration_time(IntergrationTime::MS25);
+  veml->set_integration_time(IntegrationTime::MS25);
   veml->refresh_conf0_cache();
-  Serial.println(veml->get_intergration_time());
+  Serial.println(veml->get_integration_time());
 }
 
 void loop()
 {
-  // float lux;
-  // lux = veml->receive(Register::ALS);
-  // Serial.println(lux);
-  // delay(10);
+  float lux;
+  lux = veml->get_lux();
+  Serial.println(lux);
+  delay(10);
 }
