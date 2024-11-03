@@ -62,28 +62,20 @@ void Veml7700::set_intergration_time(IntergrationTime time)
   send(conf0_cache, Register::CONF0);
 }
 
-Gain Veml7700::get_gain(bool bust_cache)
+Gain Veml7700::get_gain()
 {
-  if (bust_cache){
-    uint16_t conf0 = receive(Register::CONF0);
-    uint16_t gain = CONF0_GET_GAIN(conf0);
-    CONF0_SET_GAIN(conf0_cache, gain);
-  }
-
   return CONF0_GET_GAIN(conf0_cache);
 }
 
-IntergrationTime Veml7700::get_intergration_time(bool bust_cache)
+IntergrationTime Veml7700::get_intergration_time()
 {
-  if (bust_cache){
-    uint16_t conf0 = receive(Register::CONF0);
-    uint16_t gain = CONF0_GET_INTEGRATION_TIME(conf0);
-    CONF0_SET_INTERGRATION_TIME(conf0_cache, gain);
-  }
-
   return CONF0_GET_INTEGRATION_TIME(conf0_cache);
 }
 
+void Veml7700::refresh_conf0_cache()
+{
+  conf0_cache = receive(Register::CONF0);
+}
 
 void Veml7700::send(uint32_t data, uint8_t reg)
 {

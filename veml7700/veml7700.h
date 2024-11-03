@@ -59,8 +59,10 @@ public:
   void set_gain(Gain gain);
   void set_intergration_time(IntergrationTime time);
 
-  Gain get_gain(bool bust_cache=false);
-  IntergrationTime get_intergration_time(bool bust_cache=false);
+  Gain get_gain();
+  IntergrationTime get_intergration_time();
+
+  void refresh_conf0_cache();
 
   void send(uint32_t data, uint8_t reg);
   uint32_t Veml7700::receive(uint8_t reg);

@@ -15,7 +15,8 @@ void setup()
   gain = veml->get_gain();
   Serial.println(gain);
   veml->set_intergration_time(IntergrationTime::MS25);
-  Serial.println(veml->get_intergration_time(true));
+  veml->refresh_conf0_cache();
+  Serial.println(veml->get_intergration_time());
 }
 
 void loop()
