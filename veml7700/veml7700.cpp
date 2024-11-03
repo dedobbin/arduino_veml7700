@@ -39,32 +39,51 @@ void Veml7700::init()
   Wire.begin();
   CONF0_SET_SHUTDOWN(conf0_cache, 0);
   CONF0_SET_ENABLE_INTERRUPT(conf0_cache, 0);
-  CONF0_SET_PERSISTENCE(conf0_cache, IntergrationTime::MS100);
-  CONF0_SET_INTERGRATION_TIME(conf0_cache, Persistence::_1);
+  CONF0_SET_PERSISTENCE(conf0_cache, Persistence::_1);
+  CONF0_SET_INTERGRATION_TIME(conf0_cache, IntergrationTime::MS100);
   CONF0_SET_GAIN(conf0_cache, Gain::X2);
-  send(conf0_cache, Register::CONF_0);
+  send(conf0_cache, Register::CONF0);
+  
+  delay(3); // Should be done after setting power mode
 
   send(0, Register::THRESHOLD_L);
   send(0xffff, Register::THRESHOLD_H);
-  delay(3);
 }
 
 void Veml7700::set_gain(Gain gain)
 {
   CONF0_SET_GAIN(conf0_cache, gain);
-  send(conf0_cache, Register::CONF_0);
+  send(conf0_cache, Register::CONF0);
 }
 
-Gain Veml7700::get_gain(bool bust_cache=false)
+void Veml7700::set_intergration_time(IntergrationTime time)
+{
+  CONF0_SET_INTERGRATION_TIME(conf0_cache, time);
+  send(conf0_cache, Register::CONF0);
+}
+
+Gain Veml7700::get_gain(bool bust_cache)
 {
   if (bust_cache){
-    uint16_t conf0 = receive(Register::CONF_0);
+    uint16_t conf0 = receive(Register::CONF0);
     uint16_t gain = CONF0_GET_GAIN(conf0);
     CONF0_SET_GAIN(conf0_cache, gain);
   }
 
   return CONF0_GET_GAIN(conf0_cache);
 }
+
+IntergrationTime Veml7700::get_intergration_time(bool bust_cache)
+{
+  if (bust_cache){
+    uint16_t conf0 = receive(Register::CONF0);
+    uint16_t gain = CONF0_GET_INTEGRATION_TIME(conf0);
+    CONF0_SET_INTERGRATION_TIME(conf0_cache, gain);
+  }
+
+  return CONF0_GET_INTEGRATION_TIME(conf0_cache);
+}
+
 
 void Veml7700::send(uint32_t data, uint8_t reg)
 {

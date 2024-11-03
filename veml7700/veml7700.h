@@ -18,7 +18,7 @@
 
 typedef enum
 {
-  CONF_0      = 0x0, 
+  CONF0      = 0x0, 
   THRESHOLD_H = 0x01,
   THRESHOLD_L = 0x02,
   ALS         = 0x04
@@ -57,8 +57,10 @@ public:
   void init();
 
   void set_gain(Gain gain);
-  
+  void set_intergration_time(IntergrationTime time);
+
   Gain get_gain(bool bust_cache=false);
+  IntergrationTime get_intergration_time(bool bust_cache=false);
 
   void send(uint32_t data, uint8_t reg);
   uint32_t Veml7700::receive(uint8_t reg);

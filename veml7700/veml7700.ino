@@ -11,10 +11,11 @@ void setup()
   veml->init();
   Gain gain = veml->get_gain();
   Serial.println(gain);
-  veml->set_gain(Gain::X1);
+  veml->set_gain(Gain::D8);
   gain = veml->get_gain();
   Serial.println(gain);
-
+  veml->set_intergration_time(IntergrationTime::MS25);
+  Serial.println(veml->get_intergration_time(true));
 }
 
 void loop()
