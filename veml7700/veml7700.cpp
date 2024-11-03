@@ -34,19 +34,36 @@ void check_transmission_result(uint8_t res)
   }
 }
 
-void Veml7700::begin()
+void Veml7700::init()
 {
   Wire.begin();
-  CONF0_SET_SHUTDOWN(conf_0_cache, 0);
-  CONF0_SET_ENABLE_INTERRUPT(conf_0_cache, 0);
-  CONF0_SET_PERSISTENCE(conf_0_cache, IntergrationTime::MS100);
-  CONF0_SET_INTERGRATION_TIME(conf_0_cache, Persistence::_1);
-  CONF0_SET_GAIN(conf_0_cache, Gain::X2);
-  send(conf_0_cache, Register::CONF_0);
+  CONF0_SET_SHUTDOWN(conf0_cache, 0);
+  CONF0_SET_ENABLE_INTERRUPT(conf0_cache, 0);
+  CONF0_SET_PERSISTENCE(conf0_cache, IntergrationTime::MS100);
+  CONF0_SET_INTERGRATION_TIME(conf0_cache, Persistence::_1);
+  CONF0_SET_GAIN(conf0_cache, Gain::X2);
+  send(conf0_cache, Register::CONF_0);
 
   send(0, Register::THRESHOLD_L);
   send(0xffff, Register::THRESHOLD_H);
   delay(3);
+}
+
+void Veml7700::set_gain(Gain gain)
+{
+  CONF0_SET_GAIN(conf0_cache, gain);
+  send(conf0_cache, Register::CONF_0);
+}
+
+Gain Veml7700::get_gain(bool bust_cache=false)
+{
+  if (bust_cache){
+    uint16_t conf0 = receive(Register::CONF_0);
+    uint16_t gain = CONF0_GET_GAIN(conf0);
+    CONF0_SET_GAIN(conf0_cache, gain);
+  }
+
+  return CONF0_GET_GAIN(conf0_cache);
 }
 
 void Veml7700::send(uint32_t data, uint8_t reg)

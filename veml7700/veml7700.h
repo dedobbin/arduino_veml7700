@@ -8,17 +8,13 @@
 #define CONF0_SET_INTERGRATION_TIME(val, bit_value)  ((val) = ((val) & ~(0xF << 6)) | ((bit_value & 0xF) << 6))
 #define CONF0_SET_GAIN(val, bit_value)  ((val) = ((val) & ~(3 << 11)) | ((bit_value & 3) << 11))
 
-#define VEML7700_I2C_ADDR 0x10
+#define CONF0_GET_SHUTDOWN(val)          ((val) & 1)
+#define CONF0_GET_ENABLE_INTERRUPT(val)  (((val) >> 1) & 1)
+#define CONF0_GET_PERSISTENCE(val)       (((val) >> 4) & 3)
+#define CONF0_GET_INTEGRATION_TIME(val)  (((val) >> 6) & 0xF)
+#define CONF0_GET_GAIN(val)              (((val) >> 11) & 3)
 
-class Veml7700
-{
-public:
-  void begin();
-  void send(uint32_t data, uint8_t reg);
-  uint32_t Veml7700::receive(uint8_t reg);
-private:
-  uint16_t conf_0_cache = 0;
-};
+#define VEML7700_I2C_ADDR 0x10
 
 typedef enum
 {
@@ -53,3 +49,19 @@ typedef enum
   _4 = 0x2,
   _8 = 0x3
 }Persistence;
+
+
+class Veml7700
+{
+public:
+  void init();
+
+  void set_gain(Gain gain);
+  
+  Gain get_gain(bool bust_cache=false);
+
+  void send(uint32_t data, uint8_t reg);
+  uint32_t Veml7700::receive(uint8_t reg);
+private:
+  uint16_t conf0_cache = 0;
+};
