@@ -9,11 +9,10 @@ void setup()
   
   veml = new Veml7700();
   veml->init();
-  Gain gain = veml->get_gain();
-  Serial.println(gain);
-  veml->set_integration_time(IntegrationTime::MS25);
-  veml->refresh_conf0_cache();
-  Serial.println(veml->get_integration_time());
+  // Gain gain = veml->get_gain();
+  // Serial.println(gain);
+  // veml->set_integration_time(IntegrationTime::MS25);
+  // Serial.println(veml->get_integration_time());
 }
 
 void loop()
