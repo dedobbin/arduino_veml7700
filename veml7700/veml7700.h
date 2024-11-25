@@ -53,6 +53,8 @@ typedef enum
 
 class Veml7700
 {
+  // TODO:  At lux levels above 100 lux GAIN level 1 and 2 should not be used as the sensor becomes non-linear
+  // https://www.vishay.com/docs/84323/designingveml7700.pdf
 public:
   void init();
 
@@ -72,6 +74,4 @@ private:
   uint32_t Veml7700::receive(uint8_t reg) const;
 
   uint16_t conf0_cache = 0;
-  float gain_factors[10] = {0};
-  float integration_time_factors[10] = {0};
 };

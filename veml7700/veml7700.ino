@@ -13,6 +13,9 @@ void setup()
   // Serial.println(gain);
   // veml->set_integration_time(IntegrationTime::MS25);
   // Serial.println(veml->get_integration_time());
+
+  auto lux = veml->als_to_lux(0b001010111001101, Gain::D4, IntegrationTime::MS100);
+  Serial.println(lux);
 }
 
 void loop()

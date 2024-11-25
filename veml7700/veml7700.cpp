@@ -36,19 +36,6 @@ void check_transmission_result(uint8_t res)
 
 void Veml7700::init()
 {
-
-  gain_factors[Gain::X1] = 1.f;
-  gain_factors[Gain::X2] = 0.5f;
-  gain_factors[Gain::D8] = 8.f;
-  gain_factors[Gain::D4] = 4.f;
-
-  integration_time_factors[IntegrationTime::MS25] = 0.2304f;
-  integration_time_factors[IntegrationTime::MS50] = 0.1152f;
-  integration_time_factors[IntegrationTime::MS100] = 0.0576f;
-  integration_time_factors[IntegrationTime::MS200] = 0.0288f;
-  integration_time_factors[IntegrationTime::MS400] = 0.0144f;
-  integration_time_factors[IntegrationTime::MS800] = 0.0072f;
-
   Wire.begin();
   CONF0_SET_SHUTDOWN(conf0_cache, 0);
   CONF0_SET_ENABLE_INTERRUPT(conf0_cache, 0);
@@ -135,8 +122,35 @@ uint32_t Veml7700::receive(uint8_t reg) const
 
 float Veml7700::als_to_lux(uint16_t als_value, Gain gain, IntegrationTime integration_time) const
 {
-  float integration_time_factor = integration_time_factors[integration_time];
-  float gain_factor = gain_factors[gain];
-  float lux = als_value * gain_factor / integration_time_factor;
-  return lux;
+  // TODO: MAXIMUM POSSIBLE ILLUMINATION (lx)
+  // https://www.vishay.com/docs/84323/designingveml7700.pdf
+  float resolution = 0.f;
+  if (gain == Gain::X2)
+     resolution = 0.0042f;
+  else if (gain == Gain::X1)
+    resolution = 0.0084f;
+  else if (gain== Gain::D4)
+    resolution = 0.0336;
+  else if (gain == Gain::D8)
+    resolution = 0.0672;
+  else
+    error("Unknown gain");
+  
+  if (integration_time == IntegrationTime::MS800)
+    resolution *= 1;
+  else if (integration_time == IntegrationTime::MS400)
+    resolution *= 2;
+  else if (integration_time == IntegrationTime::MS200)
+    resolution *= 4;
+  else if (integration_time == IntegrationTime::MS100)
+    resolution *= 8;
+  else if (integration_time == IntegrationTime::MS50)
+    resolution *= 16;
+  else if (integration_time == IntegrationTime::MS25)
+    resolution *= 32;
+  else 
+    error("Unknown integration time");
+  // TODO: for illuminations > 1000 lx a correction formula needs to be applied
+  // TODO: When using GAIN level 1/4 and 1/8 the correction formula should be used.
+  return als_value * resolution;
 }
