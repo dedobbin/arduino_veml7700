@@ -64,8 +64,17 @@ void Veml7700::set_integration_time(IntegrationTime time)
 
 float Veml7700::get_lux() const
 {
+  Gain gain = get_gain();
+  IntegrationTime integration_time = get_integration_time();
+
   uint32_t als_value = receive(Register::ALS);
-  return als_to_lux(als_value, get_gain(), get_integration_time());
+  float lux = als_to_lux(als_value, gain, integration_time);
+
+  if (lux > 100 || gain == Gain::D4 || gain == Gain::D8){
+    lux = lux_correction(lux);
+  }
+
+  return lux;
 }
 
 Gain Veml7700::get_gain() const
@@ -122,8 +131,10 @@ uint32_t Veml7700::receive(uint8_t reg) const
 
 float Veml7700::als_to_lux(uint16_t als_value, Gain gain, IntegrationTime integration_time) const
 {
-  // TODO: MAXIMUM POSSIBLE ILLUMINATION (lx)
+  // Designing the VEML7700 Into an Application - CALCULATING THE LUX LEVEL
   // https://www.vishay.com/docs/84323/designingveml7700.pdf
+  
+  // TODO: MAXIMUM POSSIBLE ILLUMINATION (lx)
   float resolution = 0.f;
   if (gain == Gain::X2)
      resolution = 0.0042f;
@@ -150,7 +161,15 @@ float Veml7700::als_to_lux(uint16_t als_value, Gain gain, IntegrationTime integr
     resolution *= 32;
   else 
     error("Unknown integration time");
-  // TODO: for illuminations > 1000 lx a correction formula needs to be applied
-  // TODO: When using GAIN level 1/4 and 1/8 the correction formula should be used.
+
   return als_value * resolution;
+}
+
+float Veml7700::lux_correction(float lux) const
+{
+  const float a = 6.0135e-13;
+  const float b = -9.3924e-9;
+  const float c =  8.1488e-5;
+  const float d = 1.0023;
+  return a * pow(lux, 4) + b * pow(lux, 3) + c * pow(lux, 2) + d * lux;
 }

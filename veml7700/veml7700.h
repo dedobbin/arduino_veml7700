@@ -68,7 +68,7 @@ public:
   void refresh_conf0_cache();
 
   float als_to_lux(uint16_t als_value, Gain gain, IntegrationTime integration_time) const;
-  
+  float lux_correction(float lux) const;
 private:
   void send(uint32_t data, uint8_t reg) const;
   uint32_t Veml7700::receive(uint8_t reg) const;
