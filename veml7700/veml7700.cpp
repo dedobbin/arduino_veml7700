@@ -46,8 +46,15 @@ void Veml7700::init()
   
   delay(3); // Should be done after setting power mode
 
-  send(0, Register::THRESHOLD_L);
-  send(0xffff, Register::THRESHOLD_H);
+  // This refers to the raw als value
+  send(200, Register::THRESHOLD_L);
+  send(1500, Register::THRESHOLD_H);
+}
+
+void Veml7700::enable_interrupt(bool on)
+{
+  CONF0_SET_ENABLE_INTERRUPT(conf0_cache, on);
+  send(conf0_cache, Register::CONF0);
 }
 
 void Veml7700::set_gain(Gain gain)
@@ -75,6 +82,11 @@ float Veml7700::get_lux() const
   }
 
   return lux;
+}
+
+bool Veml7700::interrupt_is_enabled() const
+{
+  return CONF0_GET_ENABLE_INTERRUPT(conf0_cache);
 }
 
 Gain Veml7700::get_gain() const

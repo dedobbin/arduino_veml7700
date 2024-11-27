@@ -9,19 +9,25 @@ void setup()
   
   veml = new Veml7700();
   veml->init();
-  // Gain gain = veml->get_gain();
-  // Serial.println(gain);
-  // veml->set_integration_time(IntegrationTime::MS25);
-  // Serial.println(veml->get_integration_time());
+  veml->enable_interrupt();
 
-  auto lux = veml->als_to_lux(0b001010111001101, Gain::D4, IntegrationTime::MS100);
-  Serial.println(lux);
+  // auto lux = veml->als_to_lux(0b001010111001101, Gain::D4, IntegrationTime::MS100);
+  // Serial.println(lux);
 }
 
 void loop()
 {
-  float lux;
-  lux = veml->get_lux();
-  Serial.println(lux);
+  // float lux;
+  // lux = veml->get_lux();
+  // Serial.println(lux);
+
+  uint32_t interrupt_status = veml->receive(Register::INTERRUPT);
+  if (interrupt_status & InterruptStatus::INTERRUPT_HIGH){
+    Serial.println("High");
+  }
+
+  if (interrupt_status & InterruptStatus::INTERRUPT_LOW){
+    Serial.println("Low");
+  }
   delay(10);
 }

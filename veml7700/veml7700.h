@@ -18,11 +18,19 @@
 
 typedef enum
 {
-  CONF0      = 0x0, 
+  CONF0       = 0x0, 
   THRESHOLD_H = 0x01,
   THRESHOLD_L = 0x02,
-  ALS         = 0x04
+  ALS         = 0x04,
+  WHITE       = 0x05,
+  INTERRUPT   = 0x06
 }Register;
+
+typedef enum
+{
+  INTERRUPT_LOW   = 0x8000,
+  INTERRUPT_HIGH  = 0X4000
+} InterruptStatus;
 
 typedef enum 
 {
@@ -58,10 +66,12 @@ class Veml7700
 public:
   void init();
 
+  void enable_interrupt(bool on = true);
   void set_gain(Gain gain);
   void set_integration_time(IntegrationTime time);
 
   float get_lux() const;
+  bool interrupt_is_enabled() const;
   Gain get_gain() const;
   IntegrationTime get_integration_time() const;
 
@@ -69,9 +79,9 @@ public:
 
   float als_to_lux(uint16_t als_value, Gain gain, IntegrationTime integration_time) const;
   float lux_correction(float lux) const;
-private:
   void send(uint32_t data, uint8_t reg) const;
   uint32_t Veml7700::receive(uint8_t reg) const;
 
+private:
   uint16_t conf0_cache = 0;
 };
